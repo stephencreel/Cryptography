@@ -1,7 +1,7 @@
 /*/
 Analysis of RC-4 Stream Cipher by Stephen Creel
 
-Analyzes the first 100 bytes of RC-4 output stream to identify deviation from a
+Analyzes the first n bytes of RC-4 output stream to identify deviation from a
 purely random stream.
 
 Instructions for Assignment:
@@ -28,8 +28,8 @@ std::mt19937 rng(std::chrono::system_clock::now().time_since_epoch().count());
 
 /*/ Return Random Number in Range ( min , max ) /*/
 int randomNum(int min, int max) {
-    std::uniform_int_distribution<int> ran(min, max);
-    return ran(rng);
+    std::uniform_int_distribution<int> dist(min, max);
+    return dist(rng);
 }
 
 /*/ Generate a 32-bit Initial Value Stored as an Array /*/
@@ -60,7 +60,7 @@ void frc4(int * IV, int n, int * out) {
     for(int j = 0; j < 32; ++j) seed[j + 96] = *(IV + j);
 
     // Key-Scheduling Algorithm
-    int S[256], J = 0, I = 0;
+    int S[256], J = 0;
     for(int i = 0; i < 256; ++i) S[i] = i;
     for(int i = 0; i < 256; ++i) {
         J = (J + S[i] + seed[i % 128]) % 256;
@@ -68,7 +68,7 @@ void frc4(int * IV, int n, int * out) {
     }
 
     // Pseudo-Random Generation Algorithm
-    J = 0;
+    int I = 0; J = 0;
     for(int i = 0; i < n; ++i) {
         I = (I + 1) % 256;
         J = (J + S[I]) % 256;
@@ -85,8 +85,8 @@ int main() {
     unsigned int attempts = 256000000;
 
     // Initialize Counter Array
-    int count[100][256];
-    for(int i = 0; i < 100; ++i)
+    int count[streamNum][256];
+    for(int i = 0; i < streamNum; ++i)
         for(int j = 0; j < 256; ++j) count[i][j] = 0;
 
     // Run Attempts
@@ -103,8 +103,7 @@ int main() {
 
     // Output Counter Data
     for(int i = 0; i < 100; ++i) {
-            std::cout << "\n\n----------\n--- INDEX " << i
-            << "----------\n----------\n";
+            std::cout << "\n\n----------\n--- INDEX " << i << "----------\n\n";
         for(int j = 0; j < 256; ++j) {
             std::cout << "[ " << j << ": " << count[i][j] << " ] ";
         }
