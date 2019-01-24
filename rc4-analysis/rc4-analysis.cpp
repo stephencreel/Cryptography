@@ -91,9 +91,16 @@ int main() {
         for(int j = 0; j < 256; ++j) count[i][j] = 0;
 
     // Run Attempts
+    std::cout << "Running " << attempts << " attempts of RC-4 Analysis." << std::endl;
+    int run = 1;
     for(unsigned int i = 0; i < attempts; ++i) {
-        std::cout << "Running attempt " << i + 1 << std::endl;
-
+        
+        // Track and Output Attempts
+        if(i + 1 == run * 1000000) {
+            std::cout << (i + 1) / 1000000 << " million attempts done." << std::endl;
+            ++run;
+        }
+        
         // Generate RC-4 Stream
         unsigned int stream[streamNum];
         frc4(generateIV(), streamNum, stream);
