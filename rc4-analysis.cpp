@@ -1,7 +1,7 @@
 /*/
 Analysis of RC-4 Stream Cipher by Stephen Creel
 
-Analyzes the first n bytes of RC-4 output stream to identify deviation from a
+Analyzes the first 100 bytes of RC-4 output stream to identify deviation from a
 purely random stream.
 
 Instructions for Assignment:
@@ -19,6 +19,7 @@ Depending on the output increment the corresponding count values.
 /*/
 
 #include <iostream>
+#include <fstream>
 #include <random>
 #include <chrono>
 #include <algorithm>
@@ -28,39 +29,39 @@ std::mt19937 rng(std::chrono::system_clock::now().time_since_epoch().count());
 
 /*/ Return Random Number in Range ( min , max ) /*/
 int randomNum(int min, int max) {
-    std::uniform_int_distribution<int> dist(min, max);
-    return dist(rng);
+    std::uniform_int_distribution<int> ran(min, max);
+    return ran(rng);
 }
 
 /*/ Generate a 32-bit Initial Value Stored as an Array /*/
-int * generateIV() {
-    static int IV[32];
+unsigned int * generateIV() {
+    static unsigned int IV[32];
     for(int i = 0; i < 32; ++i) IV[i] = randomNum(0, 1);
     return IV;
 }
 
 /*/ RC-4 Cryptographic Algorithm /*/
-void frc4(int * IV, int n, int * out) {
+void frc4(unsigned int * IV, unsigned int n, unsigned int * out) {
 
     // Initialize Fixed Sequence Key
-    int key[96] = {1, 1, 0, 0, 1, 0, 1, 0, 1, 1,
-                    0, 1, 0, 0, 1, 1, 1, 0, 0, 1,
-                    0, 1, 1, 0, 1, 0, 1, 0, 0, 0,
-                    0, 1, 1, 0, 1, 0, 1, 0, 1, 1,
-                    1, 1, 0, 0, 1, 1, 1, 0, 0, 1,
-                    0, 1, 0, 1, 1, 0, 1, 1, 1, 0,
-                    0, 1, 0, 0, 1, 1, 1, 0, 0, 1,
-                    1, 1, 1, 1, 1, 1, 1, 0, 0, 0,
-                    0, 1, 0, 1, 1, 0, 1, 1, 1, 0,
-                    0, 1, 0, 0, 1, 0};
+    unsigned int key[96] = {1, 1, 0, 0, 1, 0, 1, 0, 1, 1,
+                            0, 1, 0, 0, 1, 1, 1, 0, 0, 1,
+                            0, 1, 1, 0, 1, 0, 1, 0, 0, 0,
+                            0, 1, 1, 0, 1, 0, 1, 0, 1, 1,
+                            1, 1, 0, 0, 1, 1, 1, 0, 0, 1,
+                            0, 1, 0, 1, 1, 0, 1, 1, 1, 0,
+                            0, 1, 0, 0, 1, 1, 1, 0, 0, 1,
+                            1, 1, 1, 1, 1, 1, 1, 0, 0, 0,
+                            0, 1, 0, 1, 1, 0, 1, 1, 1, 0,
+                            0, 1, 0, 0, 1, 0};
 
     // Populate Seed with Key and Initial Value
-    int seed[n];
-    for(int j = 0; j < 96; ++j) seed[j] = key[j];
-    for(int j = 0; j < 32; ++j) seed[j + 96] = *(IV + j);
+    unsigned int seed[n];
+    for(int j = 0; j < 32; ++j) seed[j] = *(IV + j);
+    for(int j = 0; j < 96; ++j) seed[j + 32] = key[j];
 
     // Key-Scheduling Algorithm
-    int S[256], J = 0;
+    int S[256], J = 0, I = 0;
     for(int i = 0; i < 256; ++i) S[i] = i;
     for(int i = 0; i < 256; ++i) {
         J = (J + S[i] + seed[i % 128]) % 256;
@@ -68,7 +69,7 @@ void frc4(int * IV, int n, int * out) {
     }
 
     // Pseudo-Random Generation Algorithm
-    int I = 0; J = 0;
+    J = 0;
     for(int i = 0; i < n; ++i) {
         I = (I + 1) % 256;
         J = (J + S[I]) % 256;
@@ -81,12 +82,12 @@ void frc4(int * IV, int n, int * out) {
 
 int main() {
 
-    int streamNum = 100;
+    unsigned int streamNum = 100;
     unsigned int attempts = 256000000;
 
     // Initialize Counter Array
-    int count[streamNum][256];
-    for(int i = 0; i < streamNum; ++i)
+    unsigned int count[100][256];
+    for(int i = 0; i < 100; ++i)
         for(int j = 0; j < 256; ++j) count[i][j] = 0;
 
     // Run Attempts
@@ -94,18 +95,22 @@ int main() {
         std::cout << "Running attempt " << i + 1 << std::endl;
 
         // Generate RC-4 Stream
-        int stream[streamNum];
+        unsigned int stream[streamNum];
         frc4(generateIV(), streamNum, stream);
 
         // Adjust Counter for New Stream
         for(int i = 0; i < streamNum; ++i) ++count[i][stream[i]];
     }
 
-    // Output Counter Data
+    // Output Counter Data to File
+    std::cout << "Outputting to File." << std::endl;
+    std::ofstream outFile;
+    outFile.open ("rc4-analysis-output.txt");
     for(int i = 0; i < 100; ++i) {
-            std::cout << "\n\n----------\n--- INDEX " << i << "----------\n\n";
+            outFile << "\nINDEX " << i << std::endl;
         for(int j = 0; j < 256; ++j) {
-            std::cout << "[ " << j << ": " << count[i][j] << " ] ";
+            outFile << j << ": " << count[i][j] << "\t\t";
+            if(j % 4 == 3) outFile << std::endl;
         }
     }
     return 0;
