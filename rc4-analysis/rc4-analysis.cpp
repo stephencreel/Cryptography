@@ -56,7 +56,7 @@ void frc4(unsigned int * IV, unsigned int n, unsigned int * out) {
                             0, 1, 0, 0, 1, 0};
 
     // Populate Seed with Key and Initial Value
-    unsigned int seed[n];
+    unsigned int seed[128];
     for(int j = 0; j < 32; ++j) seed[j] = *(IV + j);
     for(int j = 0; j < 96; ++j) seed[j + 32] = key[j];
 
