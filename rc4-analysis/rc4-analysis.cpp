@@ -61,7 +61,7 @@ void frc4(unsigned int * IV, unsigned int n, unsigned int * out) {
     for(int j = 0; j < 96; ++j) seed[j + 32] = key[j];
 
     // Key-Scheduling Algorithm
-    int S[256], J = 0, I = 0;
+    unsigned int S[256], J = 0, I = 0;
     for(int i = 0; i < 256; ++i) S[i] = i;
     for(int i = 0; i < 256; ++i) {
         J = (J + S[i] + seed[i % 128]) % 256;
