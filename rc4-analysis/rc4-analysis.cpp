@@ -92,7 +92,7 @@ int main() {
 
     // Run Attempts
     std::cout << "Running " << attempts << " attempts of RC-4 Analysis." << std::endl;
-    int run = 1;
+    unsigned int run = 1;
     for(unsigned int i = 0; i < attempts; ++i) {
         
         // Track and Output Attempts
