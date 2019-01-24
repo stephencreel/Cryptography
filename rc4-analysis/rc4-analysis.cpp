@@ -95,18 +95,18 @@ int main() {
     unsigned int run = 1;
     for(unsigned int i = 0; i < attempts; ++i) {
         
-        // Track and Output Attempts
-        if(i + 1 == run * 1000000) {
-            std::cout << run << " million attempts done." << std::endl;
-            ++run;
-        }
-        
         // Generate RC-4 Stream
         unsigned int stream[streamSize];
         frc4(generateIV(), streamSize, stream);
 
         // Adjust Counter for New Stream
         for(int i = 0; i < streamSize; ++i) ++count[i][stream[i]];
+        
+        // Track and Output Attempts
+        if(i + 1 == run * 1000000) {
+            std::cout << run << " million attempts done." << std::endl;
+            ++run;
+        }
     }
 
     // Output Counter Data to File
