@@ -82,7 +82,7 @@ void frc4(unsigned int * IV, unsigned int n, unsigned int * out) {
 
 int main() {
 
-    unsigned int streamNum = 100;
+    unsigned int streamSize = 100;
     unsigned int attempts = 256000000;
 
     // Initialize Counter Array
@@ -102,11 +102,11 @@ int main() {
         }
         
         // Generate RC-4 Stream
-        unsigned int stream[streamNum];
-        frc4(generateIV(), streamNum, stream);
+        unsigned int stream[streamSize];
+        frc4(generateIV(), streamSize, stream);
 
         // Adjust Counter for New Stream
-        for(int i = 0; i < streamNum; ++i) ++count[i][stream[i]];
+        for(int i = 0; i < streamSize; ++i) ++count[i][stream[i]];
     }
 
     // Output Counter Data to File
