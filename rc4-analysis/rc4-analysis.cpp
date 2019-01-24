@@ -18,11 +18,11 @@ Call frc4(IV, n,ptr) 256 million times (with different IV input each time.)
 Depending on the output increment the corresponding count values.
 /*/
 
-#include <iostream>
-#include <fstream>
-#include <random>
-#include <chrono>
-#include <algorithm>
+#include <iostream>   // cout, endl
+#include <fstream>    // ofstream
+#include <random>     // mt19937
+#include <chrono>     // system_clock
+#include <algorithm>  // swap
 
 // Initialize Mersenne Twister Random Number Generator
 std::mt19937 rng(std::chrono::system_clock::now().time_since_epoch().count());
