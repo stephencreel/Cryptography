@@ -97,7 +97,7 @@ int main() {
         
         // Track and Output Attempts
         if(i + 1 == run * 1000000) {
-            std::cout << (i + 1) / 1000000 << " million attempts done." << std::endl;
+            std::cout << run << " million attempts done." << std::endl;
             ++run;
         }
         
