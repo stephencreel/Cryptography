@@ -113,7 +113,7 @@ int main() {
     std::cout << "Outputting to File." << std::endl;
     std::ofstream outFile;
     outFile.open ("rc4-analysis-output.txt");
-    for(int i = 0; i < 100; ++i) {
+    for(int i = 0; i < streamSize; ++i) {
             outFile << "\nINDEX " << i << std::endl;
         for(int j = 0; j < 256; ++j) {
             outFile << j << ": " << count[i][j] << "\t\t";
